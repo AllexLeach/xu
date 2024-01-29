@@ -72,6 +72,16 @@ button:focus-visible {
          align-items: center;
          gap: 1vw;
 
+         h2 {
+            @include flex-center;
+         }
+
+         img {
+            width: 27.5px;
+            height: 27.5px;
+            object-fit: cover;
+         }
+
          .count {
             display: flex;
             justify-content: center;
@@ -129,5 +139,91 @@ button:focus-visible {
    #output {
       @include flex-center;
       flex-direction: column;
+   }
+
+   .farm {
+      @include flex-center;
+      flex-direction: row-reverse;
+      align-items: start;
+      margin-left: 50px;
+      margin-top: 2vw;
+
+      .plus_ore {
+         position: absolute;
+         z-index: 3;
+         font-size: 24px;
+      }
+
+      .plus_ore.active {
+         opacity: 0;
+         animation: plusOre;
+         animation-duration: 1.5s;
+         animation-iteration-count: 1;
+         animation-timing-function: ease-out;
+         animation-fill-mode: both;
+      }
+
+      .rock {
+         position: relative;
+         z-index: 1;
+         width: 150px;
+         height: 150px;
+         background: transparent;
+         padding: 0;
+
+         img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+         }
+      }
+
+      .pickaxe {
+         position: relative;
+         z-index: 2;
+         transform: translateX(-50px);
+         width: 50px;
+         height: 50px;
+         
+         img {
+            transform: rotateY(180deg);
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+         }
+      }
+
+      .pickaxe.active {
+         animation: pickaxeWork;
+         animation-duration: .25s;
+         animation-iteration-count: 1;
+         animation-timing-function: ease-out;
+      }
+   }
+}
+
+@keyframes pickaxeWork {
+   0% {
+      transform: rotateZ(0deg) translate(-50px, -50px);
+   }
+   25% {
+      transform: rotateZ(30deg) translateX(-50px);
+   }
+   50% {
+      transform: rotateZ(-45deg) translateX(-50px);
+   }
+   100% {
+      transform: rotateZ(0deg) translateX(-50px);
+   }
+}
+
+@keyframes plusOre {
+   0% {
+      transform: translate(0, 0);
+      opacity: 1;
+   }
+   100% {
+      transform: translate(150px, -100px);
+      opacity: 0;
    }
 }

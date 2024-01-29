@@ -10,7 +10,7 @@ const user = {
       },
       'balans': 0,
       'items' : {
-         'aa': 0,
+         'пиво': 0,
          'bb': 0
       },
    },
@@ -26,7 +26,7 @@ const mine = {
       'алмаз',
    ],
    'shopToByeEntity': [
-      'aa',
+      'пиво',
       'bb',
    ],
    'shop': {
@@ -38,13 +38,13 @@ const mine = {
       'алмаз': 100
    },
    'shopToBye': {
-      'aa': 150,
+      'пиво': 500,
       'bb': 200,
    },
 };
 
 const counter = {
-   'aa': 1,
+   'пиво': 1,
    'bb': 1
 };
 
@@ -54,6 +54,8 @@ const balans = document.getElementById('balans');
 const shop = document.getElementById('shop');
 const inventory = document.getElementById('inventory');
 let timerFarm = 1000;
+let delayAnimation;
+let delayAnimationOre;
 
 function getRandom() {
    let rand = Math.trunc(Math.random()*6)+0;
@@ -63,6 +65,9 @@ function getRandom() {
 function getFarm() {
    let newOre = mine.farmEntity[getRandom()];
    user.inventory.ore[newOre] += 1;
+
+   document.querySelector('.plus_ore').innerHTML += `+1 ${newOre}`
+
    return newOre;
 };
 
@@ -73,7 +78,7 @@ function getInventoryChek() {
       outputInventory += ` ${mine.farmEntity[i]}: ${user.inventory.ore[mine.farmEntity[i]]}`;
    };
    for (item of mine.shopToByeEntity) {
-      outputItems += `${item}: ${user.inventory.items[item]} `
+      outputItems += `${item}: ${user.inventory.items[item]} шт. `
    }
    output.innerHTML += `<h1>Ваш инвентарь:</h1>`
    output.innerHTML += `<h2>${outputInventory}</h2>`
@@ -117,13 +122,14 @@ function byeItems() {
 
    mine.shopToByeEntity.forEach(element => {   
       document.querySelectorAll(`#${element}_pm`).forEach(item => {
-         console.log(item)
-         // console.log(element, counter, document.querySelector(`#${item}`), document.querySelector(`#${item}`).className);
    
          item.onclick = () => {
-            // console.log(element, counter, document.querySelector(`#${element}_pm`), document.querySelector(`#${element}_pm`).className);
             if (item.className == 'plus') {
-               counter[element] += 1
+               if (mine.shopToBye[element] * (counter[element]+1) <= user.inventory.balans) {
+                  counter[element] += 1
+               } else {
+                  counter[element] = counter[element]
+               }
             } else {
                if (counter[element] <= 1) {
                   counter[element] = 1
@@ -132,7 +138,7 @@ function byeItems() {
                }
             }
             document.querySelector(`.${element}`).innerHTML = `${counter[element]} шт.`
-            document.querySelector(`.price_${element}`).innerHTML = `${mine.shopToBye[element] * counter[element]}`
+            document.querySelector(`.price_${element}`).innerHTML = `${mine.shopToBye[element] * counter[element]} <img src="https://cdn-icons-png.flaticon.com/512/7124/7124616.png">`
          };
       });
 
@@ -175,7 +181,7 @@ function getViewBye() {
             <h2 class="${item}">${counter[item]} шт.</h2>
             <button type="btn" class="plus" id="${item}_pm">+</button>
          </div>
-         <h2 class="price_${item}">${mine.shopToBye[item]}</h2>
+         <h2 class="price_${item}">${mine.shopToBye[item]} <img src="https://cdn-icons-png.flaticon.com/512/7124/7124616.png"></h2>
       </div>`
    };
    byeItems();
@@ -197,14 +203,36 @@ function getViewShop() {
 };
 
 farm.onclick = function getOutput() {
-   let timeFarm = setInterval(() => {
-      output.innerHTML = `<h1>Вы добыли: ${getFarm()}</h1>`
-   }, timerFarm/10);
+   clearTimeout(delayAnimation);
+   clearTimeout(delayAnimationOre);
    
-   setTimeout(() => {
-      clearInterval(timeFarm);
-      // getInventoryChek();
-   }, timerFarm);
+   output.innerHTML = `<div class="farm">
+      <span class="pickaxe">
+         <img src="https://cdn-icons-png.flaticon.com/512/7266/7266601.png">
+      </span>
+      <h2 class="plus_ore"></h2>
+      <button type="btn" class="rock">
+         <img src="https://cdn-icons-png.flaticon.com/512/9139/9139978.png">
+      </button>
+   </div>`
+
+   document.querySelector('.rock').onclick = () => {
+      getFarm();
+
+      document.querySelector('.pickaxe').classList.toggle('active');
+      document.querySelector('.plus_ore').classList.toggle('active');
+
+      delayAnimation = setTimeout(() => {
+         
+         document.querySelector('.pickaxe').classList.toggle('active');
+      }, 250);
+      
+      delayAnimationOre = setTimeout(() => {
+         document.querySelector('.plus_ore').innerHTML = ''
+         
+         document.querySelector('.plus_ore').classList.toggle('active');
+      }, 500);
+   };
 };
 
 balans.onclick = function () {
